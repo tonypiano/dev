@@ -140,7 +140,7 @@
           "type": "uint256"
         }
       ],
-      "name": "DebtSent",
+      "name": "CollateralSent",
       "type": "event"
     },
     {
@@ -1181,7 +1181,7 @@
         },
         {
           "internalType": "address",
-          "name": "_DebtTokenAddress",
+          "name": "_debtTokenAddress",
           "type": "address"
         },
         {

@@ -91,7 +91,7 @@ interface BorrowerOperationsTransactions {
   moveETHGainToTrove(_borrower: string, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
   openTrove(_maxFeePercentage: BigNumberish, _LUSDAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
   repayLUSD(_LUSDAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
-  setAddresses(_troveManagerAddress: string, _activePoolAddress: string, _defaultPoolAddress: string, _stabilityPoolAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _priceFeedAddress: string, _sortedTrovesAddress: string, _DebtTokenAddress: string, _lqtyStakingAddress: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_troveManagerAddress: string, _activePoolAddress: string, _defaultPoolAddress: string, _stabilityPoolAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _priceFeedAddress: string, _sortedTrovesAddress: string, _debtTokenAddress: string, _lqtyStakingAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawColl(_collWithdrawal: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   withdrawLUSD(_maxFeePercentage: BigNumberish, _LUSDAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
 }
@@ -102,7 +102,7 @@ export interface BorrowerOperations
     ActivePoolAddressChanged(_activePoolAddress?: null): EventFilter;
     CollSurplusPoolAddressChanged(_collSurplusPoolAddress?: null): EventFilter;
     DebtBorrowingFeePaid(_borrower?: string | null, _LUSDFee?: null): EventFilter;
-    DebtTokenAddressChanged(_DebtTokenAddress?: null): EventFilter;
+    DebtTokenAddressChanged(_debtTokenAddress?: null): EventFilter;
     DefaultPoolAddressChanged(_defaultPoolAddress?: null): EventFilter;
     GasPoolAddressChanged(_gasPoolAddress?: null): EventFilter;
     LQTYStakingAddressChanged(_lqtyStakingAddress?: null): EventFilter;
@@ -118,7 +118,7 @@ export interface BorrowerOperations
   extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _activePoolAddress: string }>[];
   extractEvents(logs: Log[], name: "CollSurplusPoolAddressChanged"): _TypedLogDescription<{ _collSurplusPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "DebtBorrowingFeePaid"): _TypedLogDescription<{ _borrower: string; _LUSDFee: BigNumber }>[];
-  extractEvents(logs: Log[], name: "DebtTokenAddressChanged"): _TypedLogDescription<{ _DebtTokenAddress: string }>[];
+  extractEvents(logs: Log[], name: "DebtTokenAddressChanged"): _TypedLogDescription<{ _debtTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _defaultPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "GasPoolAddressChanged"): _TypedLogDescription<{ _gasPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "LQTYStakingAddressChanged"): _TypedLogDescription<{ _lqtyStakingAddress: string }>[];
@@ -155,14 +155,14 @@ export interface CollSurplusPool
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
     CollBalanceUpdated(_account?: string | null, _newBalance?: null): EventFilter;
-    DebtSent(_to?: null, _amount?: null): EventFilter;
+    CollateralSent(_to?: null, _amount?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     TroveManagerAddressChanged(_newTroveManagerAddress?: null): EventFilter;
   };
   extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _newActivePoolAddress: string }>[];
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _newBorrowerOperationsAddress: string }>[];
   extractEvents(logs: Log[], name: "CollBalanceUpdated"): _TypedLogDescription<{ _account: string; _newBalance: BigNumber }>[];
-  extractEvents(logs: Log[], name: "DebtSent"): _TypedLogDescription<{ _to: string; _amount: BigNumber }>[];
+  extractEvents(logs: Log[], name: "CollateralSent"): _TypedLogDescription<{ _to: string; _amount: BigNumber }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "TroveManagerAddressChanged"): _TypedLogDescription<{ _newTroveManagerAddress: string }>[];
 }
@@ -446,7 +446,7 @@ interface LQTYStakingCalls {
 interface LQTYStakingTransactions {
   increaseF_ETH(_ETHFee: BigNumberish, _overrides?: Overrides): Promise<void>;
   increaseF_LUSD(_LUSDFee: BigNumberish, _overrides?: Overrides): Promise<void>;
-  setAddresses(_lqtyTokenAddress: string, _DebtTokenAddress: string, _troveManagerAddress: string, _borrowerOperationsAddress: string, _activePoolAddress: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_lqtyTokenAddress: string, _debtTokenAddress: string, _troveManagerAddress: string, _borrowerOperationsAddress: string, _activePoolAddress: string, _overrides?: Overrides): Promise<void>;
   stake(_LQTYamount: BigNumberish, _overrides?: Overrides): Promise<void>;
   unstake(_LQTYamount: BigNumberish, _overrides?: Overrides): Promise<void>;
 }
@@ -456,8 +456,8 @@ export interface LQTYStaking
   readonly filters: {
     ActivePoolAddressSet(_activePoolAddress?: null): EventFilter;
     BorrowerOperationsAddressSet(_borrowerOperationsAddress?: null): EventFilter;
-    DebtSent(_account?: null, _amount?: null): EventFilter;
-    DebtTokenAddressSet(_DebtTokenAddress?: null): EventFilter;
+    CollateralSent(_account?: null, _amount?: null): EventFilter;
+    DebtTokenAddressSet(_debtTokenAddress?: null): EventFilter;
     F_ETHUpdated(_F_ETH?: null): EventFilter;
     F_LUSDUpdated(_F_LUSD?: null): EventFilter;
     LQTYTokenAddressSet(_lqtyTokenAddress?: null): EventFilter;
@@ -470,8 +470,8 @@ export interface LQTYStaking
   };
   extractEvents(logs: Log[], name: "ActivePoolAddressSet"): _TypedLogDescription<{ _activePoolAddress: string }>[];
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressSet"): _TypedLogDescription<{ _borrowerOperationsAddress: string }>[];
-  extractEvents(logs: Log[], name: "DebtSent"): _TypedLogDescription<{ _account: string; _amount: BigNumber }>[];
-  extractEvents(logs: Log[], name: "DebtTokenAddressSet"): _TypedLogDescription<{ _DebtTokenAddress: string }>[];
+  extractEvents(logs: Log[], name: "CollateralSent"): _TypedLogDescription<{ _account: string; _amount: BigNumber }>[];
+  extractEvents(logs: Log[], name: "DebtTokenAddressSet"): _TypedLogDescription<{ _debtTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "F_ETHUpdated"): _TypedLogDescription<{ _F_ETH: BigNumber }>[];
   extractEvents(logs: Log[], name: "F_LUSDUpdated"): _TypedLogDescription<{ _F_LUSD: BigNumber }>[];
   extractEvents(logs: Log[], name: "LQTYTokenAddressSet"): _TypedLogDescription<{ _lqtyTokenAddress: string }>[];
@@ -689,7 +689,7 @@ interface StabilityPoolTransactions {
   offset(_debtToOffset: BigNumberish, _collToAdd: BigNumberish, _overrides?: Overrides): Promise<void>;
   provideToSP(_amount: BigNumberish, _frontEndTag: string, _overrides?: Overrides): Promise<void>;
   registerFrontEnd(_kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
-  setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _activePoolAddress: string, _DebtTokenAddress: string, _sortedTrovesAddress: string, _priceFeedAddress: string, _communityIssuanceAddress: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _activePoolAddress: string, _debtTokenAddress: string, _sortedTrovesAddress: string, _priceFeedAddress: string, _communityIssuanceAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawETHGainToTrove(_upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   withdrawFromSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
 }
@@ -699,8 +699,8 @@ export interface StabilityPool
   readonly filters: {
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
+    CollateralSent(_to?: null, _amount?: null): EventFilter;
     CommunityIssuanceAddressChanged(_newCommunityIssuanceAddress?: null): EventFilter;
-    DebtSent(_to?: null, _amount?: null): EventFilter;
     DebtTokenAddressChanged(_newDebtTokenAddress?: null): EventFilter;
     DefaultPoolAddressChanged(_newDefaultPoolAddress?: null): EventFilter;
     DepositSnapshotUpdated(_depositor?: string | null, _P?: null, _S?: null, _G?: null): EventFilter;
@@ -726,8 +726,8 @@ export interface StabilityPool
   };
   extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _newActivePoolAddress: string }>[];
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _newBorrowerOperationsAddress: string }>[];
+  extractEvents(logs: Log[], name: "CollateralSent"): _TypedLogDescription<{ _to: string; _amount: BigNumber }>[];
   extractEvents(logs: Log[], name: "CommunityIssuanceAddressChanged"): _TypedLogDescription<{ _newCommunityIssuanceAddress: string }>[];
-  extractEvents(logs: Log[], name: "DebtSent"): _TypedLogDescription<{ _to: string; _amount: BigNumber }>[];
   extractEvents(logs: Log[], name: "DebtTokenAddressChanged"): _TypedLogDescription<{ _newDebtTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _newDefaultPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "DepositSnapshotUpdated"): _TypedLogDescription<{ _depositor: string; _P: BigNumber; _S: BigNumber; _G: BigNumber }>[];
@@ -830,7 +830,7 @@ interface TroveManagerTransactions {
   liquidateTroves(_n: BigNumberish, _overrides?: Overrides): Promise<void>;
   redeemCollateral(_LUSDamount: BigNumberish, _firstRedemptionHint: string, _upperPartialRedemptionHint: string, _lowerPartialRedemptionHint: string, _partialRedemptionHintNICR: BigNumberish, _maxIterations: BigNumberish, _maxFeePercentage: BigNumberish, _overrides?: Overrides): Promise<void>;
   removeStake(_borrower: string, _overrides?: Overrides): Promise<void>;
-  setAddresses(_borrowerOperationsAddress: string, _activePoolAddress: string, _defaultPoolAddress: string, _stabilityPoolAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _priceFeedAddress: string, _DebtTokenAddress: string, _sortedTrovesAddress: string, _lqtyTokenAddress: string, _lqtyStakingAddress: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_borrowerOperationsAddress: string, _activePoolAddress: string, _defaultPoolAddress: string, _stabilityPoolAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _priceFeedAddress: string, _debtTokenAddress: string, _sortedTrovesAddress: string, _lqtyTokenAddress: string, _lqtyStakingAddress: string, _overrides?: Overrides): Promise<void>;
   setTroveStatus(_borrower: string, _num: BigNumberish, _overrides?: Overrides): Promise<void>;
   updateStakeAndTotalStakes(_borrower: string, _overrides?: Overrides): Promise<BigNumber>;
   updateTroveRewardSnapshots(_borrower: string, _overrides?: Overrides): Promise<void>;

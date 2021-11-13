@@ -265,7 +265,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     event ETHGainWithdrawn(address indexed _depositor, uint _ETH, uint _LUSDLoss);
     event LQTYPaidToDepositor(address indexed _depositor, uint _LQTY);
     event LQTYPaidToFrontEnd(address indexed _frontEnd, uint _LQTY);
-    event DebtSent(address _to, uint _amount);
+    event CollateralSent(address _to, uint _amount);
 
     // --- Contract setters ---
 
@@ -273,7 +273,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _activePoolAddress,
-        address _DebtTokenAddress,
+        address _debtTokenAddress,
         address _sortedTrovesAddress,
         address _priceFeedAddress,
         address _communityIssuanceAddress
@@ -285,7 +285,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
-        checkContract(_DebtTokenAddress);
+        checkContract(_debtTokenAddress);
         checkContract(_sortedTrovesAddress);
         checkContract(_priceFeedAddress);
         checkContract(_communityIssuanceAddress);
@@ -293,7 +293,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManager(_troveManagerAddress);
         activePool = IActivePool(_activePoolAddress);
-        lusdToken = ILUSDToken(_DebtTokenAddress);
+        lusdToken = ILUSDToken(_debtTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         priceFeed = IPriceFeed(_priceFeedAddress);
         communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
@@ -301,7 +301,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
-        emit DebtTokenAddressChanged(_DebtTokenAddress);
+        emit DebtTokenAddressChanged(_debtTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit PriceFeedAddressChanged(_priceFeedAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
@@ -455,7 +455,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
 
         ETH = ETH.sub(depositorETHGain);
         emit StabilityPoolCollateralUpdated(ETH);
-        emit DebtSent(msg.sender, depositorETHGain);
+        emit CollateralSent(msg.sender, depositorETHGain);
 
         borrowerOperations.moveETHGainToTrove{ value: depositorETHGain }(msg.sender, _upperHint, _lowerHint);
     }
@@ -834,7 +834,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         uint newETH = ETH.sub(_amount);
         ETH = newETH;
         emit StabilityPoolCollateralUpdated(newETH);
-        emit DebtSent(msg.sender, _amount);
+        emit CollateralSent(msg.sender, _amount);
 
         (bool success, ) = msg.sender.call{ value: _amount }("");
         require(success, "StabilityPool: sending ETH failed");

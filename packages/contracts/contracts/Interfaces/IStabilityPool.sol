@@ -66,7 +66,7 @@ interface IStabilityPool {
     event ETHGainWithdrawn(address indexed _depositor, uint _ETH, uint _LUSDLoss);
     event LQTYPaidToDepositor(address indexed _depositor, uint _LQTY);
     event LQTYPaidToFrontEnd(address indexed _frontEnd, uint _LQTY);
-    event DebtSent(address _to, uint _amount);
+    event CollateralSent(address _to, uint _amount);
 
     // --- Functions ---
 
@@ -78,7 +78,7 @@ interface IStabilityPool {
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _activePoolAddress,
-        address _DebtTokenAddress,
+        address _debtTokenAddress,
         address _sortedTrovesAddress,
         address _priceFeedAddress,
         address _communityIssuanceAddress

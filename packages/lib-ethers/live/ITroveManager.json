@@ -1114,7 +1114,7 @@
         },
         {
           "internalType": "address",
-          "name": "_DebtTokenAddress",
+          "name": "_debtTokenAddress",
           "type": "address"
         },
         {

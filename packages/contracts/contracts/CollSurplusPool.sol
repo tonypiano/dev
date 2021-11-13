@@ -30,7 +30,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     event ActivePoolAddressChanged(address _newActivePoolAddress);
 
     event CollBalanceUpdated(address indexed _account, uint _newBalance);
-    event DebtSent(address _to, uint _amount);
+    event CollateralSent(address _to, uint _amount);
     
     // --- Contract setters ---
 
@@ -88,7 +88,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         emit CollBalanceUpdated(_account, 0);
 
         ETH = ETH.sub(claimableColl);
-        emit DebtSent(_account, claimableColl);
+        emit CollateralSent(_account, claimableColl);
 
         (bool success, ) = _account.call{ value: claimableColl }("");
         require(success, "CollSurplusPool: sending ETH failed");

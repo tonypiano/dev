@@ -50,7 +50,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_DebtTokenAddress",
+        "name": "_debtTokenAddress",
         "type": "address"
       }
     ],
@@ -696,7 +696,7 @@
       },
       {
         "internalType": "address",
-        "name": "_DebtTokenAddress",
+        "name": "_debtTokenAddress",
         "type": "address"
       },
       {

@@ -86,7 +86,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
     event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
     event PriceFeedAddressChanged(address  _newPriceFeedAddress);
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
-    event DebtTokenAddressChanged(address _DebtTokenAddress);
+    event DebtTokenAddressChanged(address _debtTokenAddress);
     event LQTYStakingAddressChanged(address _lqtyStakingAddress);
 
     event TroveCreated(address indexed _borrower, uint arrayIndex);
@@ -104,7 +104,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         address _collSurplusPoolAddress,
         address _priceFeedAddress,
         address _sortedTrovesAddress,
-        address _DebtTokenAddress,
+        address _debtTokenAddress,
         address _lqtyStakingAddress
     )
         external
@@ -122,7 +122,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         checkContract(_collSurplusPoolAddress);
         checkContract(_priceFeedAddress);
         checkContract(_sortedTrovesAddress);
-        checkContract(_DebtTokenAddress);
+        checkContract(_debtTokenAddress);
         checkContract(_lqtyStakingAddress);
 
         troveManager = ITroveManager(_troveManagerAddress);
@@ -133,7 +133,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
         priceFeed = IPriceFeed(_priceFeedAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
-        lusdToken = ILUSDToken(_DebtTokenAddress);
+        lusdToken = ILUSDToken(_debtTokenAddress);
         lqtyStakingAddress = _lqtyStakingAddress;
         lqtyStaking = ILQTYStaking(_lqtyStakingAddress);
 
@@ -145,7 +145,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit PriceFeedAddressChanged(_priceFeedAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-        emit DebtTokenAddressChanged(_DebtTokenAddress);
+        emit DebtTokenAddressChanged(_debtTokenAddress);
         emit LQTYStakingAddressChanged(_lqtyStakingAddress);
 
         _renounceOwnership();

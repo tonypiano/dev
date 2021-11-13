@@ -31,19 +31,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_newCommunityIssuanceAddress",
-        "type": "address"
-      }
-    ],
-    "name": "CommunityIssuanceAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "_to",
         "type": "address"
       },
@@ -54,7 +41,20 @@
         "type": "uint256"
       }
     ],
-    "name": "DebtSent",
+    "name": "CollateralSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newCommunityIssuanceAddress",
+        "type": "address"
+      }
+    ],
+    "name": "CommunityIssuanceAddressChanged",
     "type": "event"
   },
   {
@@ -1177,7 +1177,7 @@
       },
       {
         "internalType": "address",
-        "name": "_DebtTokenAddress",
+        "name": "_debtTokenAddress",
         "type": "address"
       },
       {

@@ -239,7 +239,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
         address _priceFeedAddress,
-        address _DebtTokenAddress,
+        address _debtTokenAddress,
         address _sortedTrovesAddress,
         address _lqtyTokenAddress,
         address _lqtyStakingAddress
@@ -255,7 +255,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         checkContract(_gasPoolAddress);
         checkContract(_collSurplusPoolAddress);
         checkContract(_priceFeedAddress);
-        checkContract(_DebtTokenAddress);
+        checkContract(_debtTokenAddress);
         checkContract(_sortedTrovesAddress);
         checkContract(_lqtyTokenAddress);
         checkContract(_lqtyStakingAddress);
@@ -267,7 +267,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         gasPoolAddress = _gasPoolAddress;
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
         priceFeed = IPriceFeed(_priceFeedAddress);
-        lusdToken = ILUSDToken(_DebtTokenAddress);
+        lusdToken = ILUSDToken(_debtTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         lqtyStaking = ILQTYStaking(_lqtyStakingAddress);
@@ -279,7 +279,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         emit GasPoolAddressChanged(_gasPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit PriceFeedAddressChanged(_priceFeedAddress);
-        emit DebtTokenAddressChanged(_DebtTokenAddress);
+        emit DebtTokenAddressChanged(_debtTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit LQTYTokenAddressChanged(_lqtyTokenAddress);
         emit LQTYStakingAddressChanged(_lqtyStakingAddress);

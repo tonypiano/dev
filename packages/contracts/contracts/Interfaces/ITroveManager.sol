@@ -48,7 +48,7 @@ interface ITroveManager is ILiquityBase {
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
         address _priceFeedAddress,
-        address _DebtTokenAddress,
+        address _debtTokenAddress,
         address _sortedTrovesAddress,
         address _lqtyTokenAddress,
         address _lqtyStakingAddress
