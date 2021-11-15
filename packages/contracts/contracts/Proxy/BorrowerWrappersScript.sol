@@ -79,67 +79,67 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         borrowerOperations.openTrove(_maxFee, _LUSDAmount, _upperHint, _lowerHint, totalCollateral);
     }
 
-    function claimSPRewardsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
-        uint collBalanceBefore = address(this).balance;
-        uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
+    // function claimSPRewardsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
+    //     uint collBalanceBefore = address(this).balance;
+    //     uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
 
-        // Claim rewards
-        stabilityPool.withdrawFromSP(0);
+    //     // Claim rewards
+    //     stabilityPool.withdrawFromSP(0);
 
-        uint collBalanceAfter = address(this).balance;
-        uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
-        uint claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
+    //     uint collBalanceAfter = address(this).balance;
+    //     uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
+    //     uint claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
 
-        // Add claimed ETH to trove, get more LUSD and stake it into the Stability Pool
-        if (claimedCollateral > 0) {
-            _requireUserHasTrove(address(this));
-            uint LUSDAmount = _getNetLUSDAmount(claimedCollateral);
-            borrowerOperations.adjustTrove{ value: claimedCollateral }(_maxFee, 0, LUSDAmount, true, _upperHint, _lowerHint);
-            // Provide withdrawn LUSD to Stability Pool
-            if (LUSDAmount > 0) {
-                stabilityPool.provideToSP(LUSDAmount, address(0));
-            }
-        }
+    //     // Add claimed ETH to trove, get more LUSD and stake it into the Stability Pool
+    //     if (claimedCollateral > 0) {
+    //         _requireUserHasTrove(address(this));
+    //         uint LUSDAmount = _getNetLUSDAmount(claimedCollateral);
+    //         borrowerOperations.adjustTrove{ value: claimedCollateral }(_maxFee, 0, LUSDAmount, true, _upperHint, _lowerHint);
+    //         // Provide withdrawn LUSD to Stability Pool
+    //         if (LUSDAmount > 0) {
+    //             stabilityPool.provideToSP(LUSDAmount, address(0));
+    //         }
+    //     }
 
-        // Stake claimed LQTY
-        uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
-        if (claimedLQTY > 0) {
-            lqtyStaking.stake(claimedLQTY);
-        }
-    }
+    //     // Stake claimed LQTY
+    //     uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
+    //     if (claimedLQTY > 0) {
+    //         lqtyStaking.stake(claimedLQTY);
+    //     }
+    // }
 
-    function claimStakingGainsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
-        uint collBalanceBefore = address(this).balance;
-        uint lusdBalanceBefore = lusdToken.balanceOf(address(this));
-        uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
+    // function claimStakingGainsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
+    //     uint collBalanceBefore = address(this).balance;
+    //     uint lusdBalanceBefore = lusdToken.balanceOf(address(this));
+    //     uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
 
-        // Claim gains
-        lqtyStaking.unstake(0);
+    //     // Claim gains
+    //     lqtyStaking.unstake(0);
 
-        uint gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
-        uint gainedLUSD = lusdToken.balanceOf(address(this)).sub(lusdBalanceBefore);
+    //     uint gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
+    //     uint gainedLUSD = lusdToken.balanceOf(address(this)).sub(lusdBalanceBefore);
 
-        uint netLUSDAmount;
-        // Top up trove and get more LUSD, keeping ICR constant
-        if (gainedCollateral > 0) {
-            _requireUserHasTrove(address(this));
-            netLUSDAmount = _getNetLUSDAmount(gainedCollateral);
-            borrowerOperations.adjustTrove{ value: gainedCollateral }(_maxFee, 0, netLUSDAmount, true, _upperHint, _lowerHint);
-        }
+    //     uint netLUSDAmount;
+    //     // Top up trove and get more LUSD, keeping ICR constant
+    //     if (gainedCollateral > 0) {
+    //         _requireUserHasTrove(address(this));
+    //         netLUSDAmount = _getNetLUSDAmount(gainedCollateral);
+    //         borrowerOperations.adjustTrove{ value: gainedCollateral }(_maxFee, 0, netLUSDAmount, true, _upperHint, _lowerHint);
+    //     }
 
-        uint totalLUSD = gainedLUSD.add(netLUSDAmount);
-        if (totalLUSD > 0) {
-            stabilityPool.provideToSP(totalLUSD, address(0));
+    //     uint totalLUSD = gainedLUSD.add(netLUSDAmount);
+    //     if (totalLUSD > 0) {
+    //         stabilityPool.provideToSP(totalLUSD, address(0));
 
-            // Providing to Stability Pool also triggers LQTY claim, so stake it if any
-            uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
-            uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
-            if (claimedLQTY > 0) {
-                lqtyStaking.stake(claimedLQTY);
-            }
-        }
+    //         // Providing to Stability Pool also triggers LQTY claim, so stake it if any
+    //         uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
+    //         uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
+    //         if (claimedLQTY > 0) {
+    //             lqtyStaking.stake(claimedLQTY);
+    //         }
+    //     }
 
-    }
+    // }
 
     function _getNetLUSDAmount(uint _collateral) internal returns (uint) {
         uint price = priceFeed.fetchPrice();
