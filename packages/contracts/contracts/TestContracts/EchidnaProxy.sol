@@ -57,7 +57,7 @@ contract EchidnaProxy {
 
     // Borrower Operations
     function openTrovePrx(uint _ETH, uint _LUSDAmount, address _upperHint, address _lowerHint, uint _maxFee) external payable {
-        borrowerOperations.openTrove{value: _ETH}(_maxFee, _LUSDAmount, _upperHint, _lowerHint);
+        borrowerOperations.openTrove(_maxFee, _LUSDAmount, _upperHint, _lowerHint, _ETH);
     }
 
     function addCollPrx(uint _ETH, address _upperHint, address _lowerHint) external payable {

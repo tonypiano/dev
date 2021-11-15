@@ -344,15 +344,15 @@ contract LQTYToken is CheckContract, ILQTYToken {
 
     // --- Optional functions ---
 
-    function name() external view override returns (string memory) {
+    function name() external view returns (string memory) {
         return _NAME;
     }
 
-    function symbol() external view override returns (string memory) {
+    function symbol() external view returns (string memory) {
         return _SYMBOL;
     }
 
-    function decimals() external view override returns (uint8) {
+    function decimals() external view returns (uint8) {
         return _DECIMALS;
     }
 

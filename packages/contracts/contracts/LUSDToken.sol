@@ -3,7 +3,7 @@
 pragma solidity 0.6.11;
 
 import "./Interfaces/ILUSDToken.sol";
-import "./Dependencies/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 /*
@@ -284,15 +284,15 @@ contract LUSDToken is CheckContract, ILUSDToken {
 
     // --- Optional functions ---
 
-    function name() external view override returns (string memory) {
+    function name() external view returns (string memory) {
         return _NAME;
     }
 
-    function symbol() external view override returns (string memory) {
+    function symbol() external view returns (string memory) {
         return _SYMBOL;
     }
 
-    function decimals() external view override returns (uint8) {
+    function decimals() external view returns (uint8) {
         return _DECIMALS;
     }
 

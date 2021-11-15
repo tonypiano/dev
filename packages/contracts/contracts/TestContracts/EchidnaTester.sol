@@ -13,6 +13,7 @@ import "../LUSDToken.sol";
 import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
+import "./ERC20Mock.sol";
 //import "../Dependencies/console.sol";
 
 // Run with:
@@ -38,6 +39,7 @@ contract EchidnaTester {
     LUSDToken public lusdToken;
     PriceFeedTestnet priceFeedTestnet;
     SortedTroves sortedTroves;
+    ERC20Mock public collateralToken;
 
     EchidnaProxy[NUMBER_OF_ACTORS] public echidnaProxies;
 
@@ -55,6 +57,7 @@ contract EchidnaTester {
             address(stabilityPool),
             address(borrowerOperations)
         );
+        collateralToken = new ERC20Mock("Mock gOHM", "gOHM", address(this), 100e18);
 
         collSurplusPool = new CollSurplusPool();
         priceFeedTestnet = new PriceFeedTestnet();
@@ -71,7 +74,7 @@ contract EchidnaTester {
             address(activePool), address(defaultPool), 
             address(stabilityPool), address(gasPool), address(collSurplusPool),
             address(priceFeedTestnet), address(sortedTroves), 
-            address(lusdToken), address(0));
+            address(lusdToken), address(0), address(collateralToken));
 
         activePool.setAddresses(address(borrowerOperations), 
             address(troveManager), address(stabilityPool), address(defaultPool));
