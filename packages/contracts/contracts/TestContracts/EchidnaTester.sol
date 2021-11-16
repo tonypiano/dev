@@ -77,16 +77,17 @@ contract EchidnaTester {
             address(lusdToken), address(0), address(collateralToken));
 
         activePool.setAddresses(address(borrowerOperations), 
-            address(troveManager), address(stabilityPool), address(defaultPool));
+            address(troveManager), address(stabilityPool), address(defaultPool), address(collateralToken),
+            address(collSurplusPool));
 
-        defaultPool.setAddresses(address(troveManager), address(activePool));
+        defaultPool.setAddresses(address(troveManager), address(activePool), address(collateralToken));
         
         stabilityPool.setAddresses(address(borrowerOperations), 
             address(troveManager), address(activePool), address(lusdToken), 
             address(sortedTroves), address(priceFeedTestnet), address(0), address(collateralToken));
 
         collSurplusPool.setAddresses(address(borrowerOperations), 
-             address(troveManager), address(activePool));
+             address(troveManager), address(activePool), address(collateralToken));
     
         sortedTroves.setParams(1e18, address(troveManager), address(borrowerOperations));
 

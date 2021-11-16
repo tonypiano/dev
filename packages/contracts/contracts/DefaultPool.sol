@@ -3,7 +3,10 @@
 pragma solidity 0.6.11;
 
 import './Interfaces/IDefaultPool.sol';
+import './Interfaces/IActivePool.sol';
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
@@ -17,15 +20,18 @@ import "./Dependencies/console.sol";
  */
 contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     using SafeMath for uint256;
+    using SafeERC20 for IERC20;
 
     string constant public NAME = "DefaultPool";
 
     address public troveManagerAddress;
     address public activePoolAddress;
-    uint256 internal ETH;  // deposited ETH tracker
+    IERC20 public collateralToken;
+    uint256 internal collateral;  // deposited collateral tracker
     uint256 internal LUSDDebt;  // debt
 
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
+    event CollateralTokenAddressChanged(address _newCollateralTokenAddress);
     event DefaultPoolLUSDDebtUpdated(uint _LUSDDebt);
     event DefaultPoolETHBalanceUpdated(uint _ETH);
 
@@ -33,19 +39,23 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
     function setAddresses(
         address _troveManagerAddress,
-        address _activePoolAddress
+        address _activePoolAddress,
+        address _collateralTokenAddress
     )
         external
         onlyOwner
     {
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
+        checkContract(_collateralTokenAddress);
 
         troveManagerAddress = _troveManagerAddress;
         activePoolAddress = _activePoolAddress;
+        collateralToken = IERC20(_collateralTokenAddress);
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
+        emit CollateralTokenAddressChanged(_collateralTokenAddress);
 
         _renounceOwnership();
     }
@@ -58,7 +68,7 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     * Not necessarily equal to the the contract's raw ETH balance - ether can be forcibly sent to contracts.
     */
     function getETH() external view override returns (uint) {
-        return ETH;
+        return collateral;
     }
 
     function getLUSDDebt() external view override returns (uint) {
@@ -70,12 +80,12 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     function sendETHToActivePool(uint _amount) external override {
         _requireCallerIsTroveManager();
         address activePool = activePoolAddress; // cache to save an SLOAD
-        ETH = ETH.sub(_amount);
-        emit DefaultPoolETHBalanceUpdated(ETH);
+        collateral = collateral.sub(_amount);
+        emit DefaultPoolETHBalanceUpdated(collateral);
         emit EtherSent(activePool, _amount);
+        IActivePool(activePool).addCollateral(_amount);
 
-        (bool success, ) = activePool.call{ value: _amount }("");
-        require(success, "DefaultPool: sending ETH failed");
+        collateralToken.safeTransfer(activePool, _amount);
     }
 
     function increaseLUSDDebt(uint _amount) external override {
@@ -90,6 +100,12 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
         emit DefaultPoolLUSDDebtUpdated(LUSDDebt);
     }
 
+    function addCollateral(uint _amount) external override {
+        _requireCallerIsActivePool();
+        collateral = collateral.add(_amount);
+        emit DefaultPoolETHBalanceUpdated(collateral);
+    }
+
     // --- 'require' functions ---
 
     function _requireCallerIsActivePool() internal view {
@@ -98,13 +114,5 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
     function _requireCallerIsTroveManager() internal view {
         require(msg.sender == troveManagerAddress, "DefaultPool: Caller is not the TroveManager");
-    }
-
-    // --- Fallback function ---
-
-    receive() external payable {
-        _requireCallerIsActivePool();
-        ETH = ETH.add(msg.value);
-        emit DefaultPoolETHBalanceUpdated(ETH);
     }
 }

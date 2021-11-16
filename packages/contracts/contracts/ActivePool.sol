@@ -3,7 +3,12 @@
 pragma solidity 0.6.11;
 
 import './Interfaces/IActivePool.sol';
+import './Interfaces/ICollSurplusPool.sol';
+import './Interfaces/IDefaultPool.sol';
+import './Interfaces/IStabilityPool.sol';
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
@@ -17,6 +22,7 @@ import "./Dependencies/console.sol";
  */
 contract ActivePool is Ownable, CheckContract, IActivePool {
     using SafeMath for uint256;
+    using SafeERC20 for IERC20;
 
     string constant public NAME = "ActivePool";
 
@@ -24,13 +30,17 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
-    uint256 internal ETH;  // deposited ether tracker
+    address public collSurplusPoolAddress;
+    IERC20 public collateralToken;
+    uint256 internal collateral;  // deposited collateral tracker
     uint256 internal LUSDDebt;
 
     // --- Events ---
 
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
+    event CollateralTokenAddressChanged(address _newCollateralTokenAddress);
+    event CollSurplusPoolAddressChanged(address _newCollSurplusPoolAddress);
     event ActivePoolLUSDDebtUpdated(uint _LUSDDebt);
     event ActivePoolETHBalanceUpdated(uint _ETH);
 
@@ -40,7 +50,9 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _stabilityPoolAddress,
-        address _defaultPoolAddress
+        address _defaultPoolAddress,
+        address _collateralTokenAddress,
+        address _collSurplusPoolAddress
     )
         external
         onlyOwner
@@ -49,16 +61,22 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
+        checkContract(_collateralTokenAddress);
+        checkContract(_collSurplusPoolAddress);
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
         stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
+        collSurplusPoolAddress = _collSurplusPoolAddress;
+        collateralToken = IERC20(_collateralTokenAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
+        emit CollateralTokenAddressChanged(_collateralTokenAddress);
+        emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
 
         _renounceOwnership();
     }
@@ -71,7 +89,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     *Not necessarily equal to the the contract's raw ETH balance - ether can be forcibly sent to contracts.
     */
     function getETH() external view override returns (uint) {
-        return ETH;
+        return collateral;
     }
 
     function getLUSDDebt() external view override returns (uint) {
@@ -82,12 +100,19 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
     function sendETH(address _account, uint _amount) external override {
         _requireCallerIsBOorTroveMorSP();
-        ETH = ETH.sub(_amount);
-        emit ActivePoolETHBalanceUpdated(ETH);
+        collateral = collateral.sub(_amount);
+        emit ActivePoolETHBalanceUpdated(collateral);
         emit EtherSent(_account, _amount);
 
-        (bool success, ) = _account.call{ value: _amount }("");
-        require(success, "ActivePool: sending ETH failed");
+        if (_account == collSurplusPoolAddress) {
+            ICollSurplusPool(collSurplusPoolAddress).addCollateral(_amount);
+        } else if (_account == defaultPoolAddress) {
+            IDefaultPool(defaultPoolAddress).addCollateral(_amount);
+        } else if (_account == stabilityPoolAddress) {
+            IStabilityPool(stabilityPoolAddress).addCollateral(_amount);
+        }
+
+        collateralToken.safeTransfer(_account, _amount);
     }
 
     function increaseLUSDDebt(uint _amount) external override {
@@ -101,6 +126,12 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         LUSDDebt = LUSDDebt.sub(_amount);
         ActivePoolLUSDDebtUpdated(LUSDDebt);
     }
+
+    function addCollateral(uint _amount) external override {
+         _requireCallerIsBorrowerOperationsOrDefaultPool();
+         collateral = collateral.add(_amount);
+         emit ActivePoolETHBalanceUpdated(collateral);
+     }
 
     // --- 'require' functions ---
 
@@ -124,13 +155,5 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
             msg.sender == borrowerOperationsAddress ||
             msg.sender == troveManagerAddress,
             "ActivePool: Caller is neither BorrowerOperations nor TroveManager");
-    }
-
-    // --- Fallback function ---
-
-    receive() external payable {
-        _requireCallerIsBorrowerOperationsOrDefaultPool();
-        ETH = ETH.add(msg.value);
-        emit ActivePoolETHBalanceUpdated(ETH);
     }
 }

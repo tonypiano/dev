@@ -13,4 +13,5 @@ interface IDefaultPool is IPool {
 
     // --- Functions ---
     function sendETHToActivePool(uint _amount) external;
+    function addCollateral(uint _amount) external;
 }

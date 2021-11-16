@@ -12,8 +12,11 @@ import "./Dependencies/LiquityBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOperations {
+    using SafeERC20 for IERC20;
+
     string constant public NAME = "BorrowerOperations";
 
     // --- Connected contract declarations ---
@@ -206,9 +209,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         vars.arrayIndex = contractsCache.troveManager.addTroveOwnerToArray(msg.sender);
         emit TroveCreated(msg.sender, vars.arrayIndex);
 
-        // TODO: call transferFrom
-        bool res = collateralToken.transferFrom(msg.sender, address(this), _collateralAmount);
-        require(res, "transferFrom failed");
+        collateralToken.safeTransferFrom(msg.sender, address(this), _collateralAmount);
         
         // Move the ether to the Active Pool, and mint the LUSDAmount to the borrower
         _activePoolAddColl(contractsCache.activePool, _collateralAmount);
@@ -455,8 +456,8 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
 
     // Send ETH to Active Pool and increase its recorded ETH balance
     function _activePoolAddColl(IActivePool _activePool, uint _amount) internal {
-        bool success = collateralToken.transfer(address(_activePool), _amount);
-        require(success, "Failed sending collateral to ActivePool");
+        _activePool.addCollateral(_amount);
+        collateralToken.safeTransfer(address(_activePool), _amount);
     }
 
     // Issue the specified amount of LUSD to _account and increases the total active debt (_netDebtIncrease potentially includes a LUSDFee)
