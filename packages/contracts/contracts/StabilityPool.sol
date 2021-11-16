@@ -836,6 +836,7 @@ contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
         emit StabilityPoolCollateralUpdated(newETH);
         emit CollateralSent(msg.sender, _amount);
 
+require(1 < 0, "_sendCollateralGainToDepositor");
         (bool success, ) = msg.sender.call{ value: _amount }("");
         require(success, "StabilityPool: sending ETH failed");
     }

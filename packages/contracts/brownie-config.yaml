@@ -2,7 +2,9 @@ networks:
     development:
         gas_limit: max
         gas_buffer: 1
-        gas_price: 0
+        gas_price: 10
+        max_fee: null
+        priority_fee: null
         reverting_tx_gas_limit: max
         default_contract_owner: true
         cmd_settings:
@@ -11,7 +13,7 @@ networks:
             accounts: 1000
             chain_id: 1337
             network_id: 1588949648
-            evm_version: istanbul
+            evm_version: null
             mnemonic: brownie
             block_time: 0
             default_balance: 1000000

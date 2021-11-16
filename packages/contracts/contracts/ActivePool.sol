@@ -3,6 +3,7 @@
 pragma solidity 0.6.11;
 
 import './Interfaces/IActivePool.sol';
+import "./LPRewards/Dependencies/SafeERC20.sol";  //TODO move up if works
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
@@ -17,6 +18,7 @@ import "./Dependencies/console.sol";
  */
 contract ActivePool is Ownable, CheckContract, IActivePool {
     using SafeMath for uint256;
+    using SafeERC20 for IERC20;
 
     string constant public NAME = "ActivePool";
 
@@ -78,15 +80,19 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     // --- Pool functionality ---
-
     function sendCollateral(address _account, uint _amount) external override {
         _requireCallerIsBOorTroveMorSP();
+        require(_account != address(0), "Account cannot be zero address");  //TODO checkContract?  Are we 100% sure this is a contract?
+
         Collateral = Collateral.sub(_amount);
         emit ActivePoolCollateralUpdated(Collateral);
         emit CollateralSent(_account, _amount);
-
-        (bool success, ) = _account.call{ value: _amount }(""); //TODO this is an ERC20 transfer, not a call
-        require(success, "ActivePool: sending Collateral failed");
+        
+        IERC20(_account).safeTransferFrom(address(this), _account, _amount);
+  
+  require(1 < 0, "asdf sendCollateral");
+        // (bool success, ) = _account.call{ value: _amount }(""); //TODO this is an ERC20 transfer, not a call
+        // require(success, "ActivePool: sending Collateral failed");
     }
 
     function increaseDebt(uint _amount) external override {

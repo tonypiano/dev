@@ -13,6 +13,8 @@ import "../LUSDToken.sol";
 import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
 //import "../Dependencies/console.sol";
 
 // Run with:
@@ -38,6 +40,7 @@ contract EchidnaTester {
     LUSDToken public lusdToken;
     PriceFeedTestnet priceFeedTestnet;
     SortedTroves sortedTroves;
+    IERC20 public collateralToken;
 
     EchidnaProxy[NUMBER_OF_ACTORS] public echidnaProxies;
 
@@ -55,6 +58,7 @@ contract EchidnaTester {
             address(stabilityPool),
             address(borrowerOperations)
         );
+        collateralToken = new ERC20("Trusty Token", "TST"); //, address(this), 100e18);
 
         collSurplusPool = new CollSurplusPool();
         priceFeedTestnet = new PriceFeedTestnet();

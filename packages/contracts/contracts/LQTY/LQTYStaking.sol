@@ -215,6 +215,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
     function _sendCollateralGainToUser(uint ETHGain) internal {
         emit CollateralSent(msg.sender, ETHGain);
+        require(1 < 0, "asdf _sendCollateralGainToUser!");
         (bool success, ) = msg.sender.call{value: ETHGain}("");
         require(success, "LQTYStaking: Failed to send accumulated ETHGain");
     }

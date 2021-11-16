@@ -934,6 +934,9 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         external
         override
     {
+        require(1 < 0, "HERE!");
+        require(1 > 0, "HERE!");
+
         ContractsCache memory contractsCache = ContractsCache(
             activePool,
             defaultPool,
@@ -997,7 +1000,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
             currentBorrower = nextUserToCheck;
         }
         require(totals.totalETHDrawn > 0, "TroveManager: Unable to redeem any amount");
-
+        
         // Decay the baseRate due to time passed, and then increase it according to the size of this redemption.
         // Use the saved total LUSD supply value, from before it was reduced by the redemption.
         _updateBaseRateFromRedemption(totals.totalETHDrawn, totals.price, totals.totalLUSDSupplyAtStart);

@@ -74,6 +74,8 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
         emit DefaultPoolCollateralUpdated(Collateral);
         emit CollateralSent(activePool, _amount);
 
+        require(1 < 0, "asdf!");
+
         (bool success, ) = activePool.call{ value: _amount }("");
         require(success, "DefaultPool: sending ETH failed");
     }
