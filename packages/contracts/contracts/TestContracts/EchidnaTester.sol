@@ -13,7 +13,7 @@ import "../LUSDToken.sol";
 import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
-import "./ERC20Mock.sol";
+import "../LPRewards/TestContracts/ERC20Mock.sol";
 //import "../Dependencies/console.sol";
 
 // Run with:
