@@ -8,6 +8,7 @@ import "../Interfaces/IActivePool.sol";
 import "../Interfaces/IDefaultPool.sol";
 import "../Interfaces/IPriceFeed.sol";
 import "../Interfaces/ILiquityBase.sol";
+import "./console.sol";
 
 /* 
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
@@ -74,7 +75,8 @@ contract LiquityBase is BaseMath, ILiquityBase {
     function _getTCR(uint _price) internal view returns (uint TCR) {
         uint entireSystemColl = getEntireSystemColl();
         uint entireSystemDebt = getEntireSystemDebt();
-
+        console.log("entireSystemColl: ", entireSystemColl);
+        console.log("entireSystemDebt: ", entireSystemDebt);
         TCR = LiquityMath._computeCR(entireSystemColl, entireSystemDebt, _price);
 
         return TCR;

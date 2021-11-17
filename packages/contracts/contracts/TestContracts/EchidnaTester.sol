@@ -4,7 +4,7 @@ pragma solidity 0.6.11;
 
 import "../TroveManager.sol";
 import "../BorrowerOperations.sol";
-import "../ActivePool.sol";
+import {ActivePool} from "../ActivePool.sol";
 import "../DefaultPool.sol";
 import "../StabilityPool.sol";
 import "../GasPool.sol";
@@ -13,7 +13,7 @@ import "../LUSDToken.sol";
 import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 //import "../Dependencies/console.sol";
 
@@ -40,7 +40,7 @@ contract EchidnaTester {
     LUSDToken public lusdToken;
     PriceFeedTestnet priceFeedTestnet;
     SortedTroves sortedTroves;
-    IERC20 public collateralToken;
+    ERC20 public collateralToken;
 
     EchidnaProxy[NUMBER_OF_ACTORS] public echidnaProxies;
 
@@ -75,7 +75,7 @@ contract EchidnaTester {
             address(activePool), address(defaultPool), 
             address(stabilityPool), address(gasPool), address(collSurplusPool),
             address(priceFeedTestnet), address(sortedTroves), 
-            address(lusdToken), address(0));
+            address(lusdToken), address(0), address(collateralToken));
 
         activePool.setAddresses(address(borrowerOperations), 
             address(troveManager), address(stabilityPool), address(defaultPool));

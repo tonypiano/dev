@@ -70,11 +70,12 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     function sendCollateralToActivePool(uint _amount) external override {
         _requireCallerIsTroveManager();
         address activePool = activePoolAddress; // cache to save an SLOAD
+        require(1 < 0, "oh no in sendCollateralToActivePool!");
         Collateral = Collateral.sub(_amount);
         emit DefaultPoolCollateralUpdated(Collateral);
         emit CollateralSent(activePool, _amount);
 
-        require(1 < 0, "asdf!");
+        
 
         (bool success, ) = activePool.call{ value: _amount }("");
         require(success, "DefaultPool: sending ETH failed");
@@ -106,6 +107,7 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
     receive() external payable {
         _requireCallerIsActivePool();
+        require(1 < 0, "oh no in defaultPool payable!");
         Collateral = Collateral.add(msg.value);
         emit DefaultPoolCollateralUpdated(Collateral);
     }

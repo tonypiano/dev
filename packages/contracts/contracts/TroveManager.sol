@@ -934,8 +934,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         external
         override
     {
-        require(1 < 0, "HERE!");
-        require(1 > 0, "HERE!");
+
 
         ContractsCache memory contractsCache = ContractsCache(
             activePool,
@@ -947,10 +946,14 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
             gasPoolAddress
         );
         RedemptionTotals memory totals;
-
+// console.log("1");
         _requireValidMaxFeePercentage(_maxFeePercentage);
         _requireAfterBootstrapPeriod();
         totals.price = priceFeed.fetchPrice();
+        console.log("totals.price: ", totals.price);
+        console.log("TCR: ", _getTCR(totals.price));
+        console.log("MCR: ", MCR);
+    
         _requireTCRoverMCR(totals.price);
         _requireAmountGreaterThanZero(_LUSDamount);
         _requireLUSDBalanceCoversRedemption(contractsCache.lusdToken, msg.sender, _LUSDamount);
@@ -958,10 +961,8 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         totals.totalLUSDSupplyAtStart = getEntireSystemDebt();
         // Confirm redeemer's balance is less than total LUSD supply
         assert(contractsCache.lusdToken.balanceOf(msg.sender) <= totals.totalLUSDSupplyAtStart);
-
         totals.remainingLUSD = _LUSDamount;
         address currentBorrower;
-
         if (_isValidFirstRedemptionHint(contractsCache.sortedTroves, _firstRedemptionHint, totals.price)) {
             currentBorrower = _firstRedemptionHint;
         } else {
@@ -1015,7 +1016,6 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         contractsCache.lqtyStaking.increaseF_ETH(totals.ETHFee);
 
         totals.ETHToSendToRedeemer = totals.totalETHDrawn.sub(totals.ETHFee);
-
         emit Redemption(_LUSDamount, totals.totalLUSDToRedeem, totals.totalETHDrawn, totals.ETHFee);
 
         // Burn the total LUSD that is cancelled with debt, and send the redeemed ETH to msg.sender

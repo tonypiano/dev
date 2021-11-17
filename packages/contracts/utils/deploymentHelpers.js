@@ -2,6 +2,7 @@ const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
 const LUSDToken = artifacts.require("./LUSDToken.sol")
+const WETHToken = artifacts.require("./WETH9.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
@@ -102,7 +103,9 @@ class DeploymentHelper {
       stabilityPool.address,
       borrowerOperations.address
     )
+    const collateralToken = await WETHToken.new()
     LUSDToken.setAsDeployed(lusdToken)
+    WETHToken.setAsDeployed(collateralToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
     SortedTroves.setAsDeployed(sortedTroves)
@@ -117,7 +120,8 @@ class DeploymentHelper {
 
     const coreContracts = {
       priceFeedTestnet,
-      lusdToken,
+      lusdToken,  
+      collateralToken,
       sortedTroves,
       troveManager,
       activePool,
@@ -364,7 +368,8 @@ class DeploymentHelper {
       contracts.priceFeedTestnet.address,
       contracts.sortedTroves.address,
       contracts.lusdToken.address,
-      LQTYContracts.lqtyStaking.address
+      LQTYContracts.lqtyStaking.address,
+      contracts.collateralToken.address
     )
 
     // set contracts in the Pools

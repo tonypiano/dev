@@ -1,5 +1,6 @@
 
 const BN = require('bn.js')
+const WETH = require('../mainnetDeployment/ABIs/WETH')
 const LockupContract = artifacts.require(("./LockupContract.sol"))
 const Destructible = artifacts.require("./TestContracts/Destructible.sol")
 
@@ -669,7 +670,7 @@ class TestHelper {
     lowerHint,
     ICR,
     extraParams
-  }) {
+  }) {    
     if (!maxFeePercentage) maxFeePercentage = this._100pct
     if (!extraLUSDAmount) extraLUSDAmount = this.toBN(0)
     else if (typeof extraLUSDAmount == 'string') extraLUSDAmount = this.toBN(extraLUSDAmount)
@@ -681,18 +682,26 @@ class TestHelper {
     ).add(this.toBN(1)) // add 1 to avoid rounding issues
     const lusdAmount = MIN_DEBT.add(extraLUSDAmount)
 
+    
     if (!ICR && !extraParams.value) ICR = this.toBN(this.dec(15, 17)) // 150%
     else if (typeof ICR == 'string') ICR = this.toBN(ICR)
-
+    
     const totalDebt = await this.getOpenTroveTotalDebt(contracts, lusdAmount)
     const netDebt = await this.getActualDebtFromComposite(totalDebt, contracts)
-
+    
     if (ICR) {
       const price = await contracts.priceFeedTestnet.getPrice()
       extraParams.value = ICR.mul(totalDebt).div(price)
+      console.log("---ICR", ICR.toString());
+      console.log("---totalDebt", totalDebt.toString());
+      console.log("---price", price.toString());
     }
+    console.log("---total debt:", totalDebt.toString());
+    // console.log("---extraParams:", extraParams);
+    console.log("---end extraParams.value:", extraParams.value.toString());  
 
-    const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, lusdAmount, upperHint, lowerHint, extraParams)
+    // await WETH.transfer(contracts.borrowerOperations.address, totalDebt);
+    const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, lusdAmount, upperHint, lowerHint, extraParams.value, extraParams)
 
     return {
       lusdAmount,
@@ -982,14 +991,14 @@ class TestHelper {
     const exactPartialRedemptionHint = (await contracts.sortedTroves.findInsertPosition(partialRedemptionNewICR,
       approxPartialRedemptionHint,
       approxPartialRedemptionHint))
-
+      
     const tx = await contracts.troveManager.redeemCollateral(LUSDAmount,
       firstRedemptionHint,
       exactPartialRedemptionHint[0],
       exactPartialRedemptionHint[1],
       partialRedemptionNewICR,
       0, maxFee,
-      { from: redeemer, gasPrice: 0 },
+      { from: redeemer },
     )
 
     return tx

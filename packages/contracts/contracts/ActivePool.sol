@@ -3,11 +3,11 @@
 pragma solidity 0.6.11;
 
 import './Interfaces/IActivePool.sol';
-import "./LPRewards/Dependencies/SafeERC20.sol";  //TODO move up if works
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 /*
  * The Active Pool holds the Collateral token and debt amount (but not debt tokens) for all active troves.
@@ -83,26 +83,28 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function sendCollateral(address _account, uint _amount) external override {
         _requireCallerIsBOorTroveMorSP();
         require(_account != address(0), "Account cannot be zero address");  //TODO checkContract?  Are we 100% sure this is a contract?
-
+  require(1 < 0, "asdf sendCollateral");
         Collateral = Collateral.sub(_amount);
         emit ActivePoolCollateralUpdated(Collateral);
         emit CollateralSent(_account, _amount);
         
         IERC20(_account).safeTransferFrom(address(this), _account, _amount);
   
-  require(1 < 0, "asdf sendCollateral");
+
         // (bool success, ) = _account.call{ value: _amount }(""); //TODO this is an ERC20 transfer, not a call
         // require(success, "ActivePool: sending Collateral failed");
     }
 
     function increaseDebt(uint _amount) external override {
         _requireCallerIsBOorTroveM();
+        // require(1<0, "in increaseDebt!");
         Debt  = Debt.add(_amount);
         ActivePoolDebtUpdated(Debt);
     }
 
     function decreaseDebt(uint _amount) external override {
         _requireCallerIsBOorTroveMorSP();
+        // require(1<0, "in decreaseDebt!");
         Debt = Debt.sub(_amount);
         ActivePoolDebtUpdated(Debt);
     }
@@ -135,6 +137,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
     receive() external payable {
         _requireCallerIsBorrowerOperationsOrDefaultPool();
+        require(1<0, "oh no in payable!");
         Collateral = Collateral.add(msg.value);
         emit ActivePoolCollateralUpdated(Collateral);
     }

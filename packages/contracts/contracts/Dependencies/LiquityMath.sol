@@ -99,7 +99,7 @@ library LiquityMath {
         }
     }
 
-    function _computeCR(uint _coll, uint _debt, uint _price) internal pure returns (uint) {
+    function _computeCR(uint _coll, uint _debt, uint _price) internal pure returns (uint) {        
         if (_debt > 0) {
             uint newCollRatio = _coll.mul(_price).div(_debt);
 

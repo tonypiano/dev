@@ -1,3 +1,4 @@
+const { artifacts } = require("hardhat")
 const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 const NonPayable = artifacts.require('NonPayable.sol')
@@ -49,6 +50,13 @@ contract('CollSurplusPool', async accounts => {
   it("CollSurplusPool::getETH(): Returns the ETH balance of the CollSurplusPool after redemption", async () => {
     const ETH_1 = await collSurplusPool.getETH()
     assert.equal(ETH_1, '0')
+
+    await contracts.collateralToken.deposit({ value: dec(10000, 'ether') });
+    const totalSupply = await contracts.collateralToken.totalSupply();
+    console.log("--- totalSupply: ", totalSupply.toString());
+
+    await contracts.collateralToken.transfer(contracts.borrowerOperations.address, dec(5000, 'ether'));
+
 
     const price = toBN(dec(100, 18))
     await priceFeed.setPrice(price)

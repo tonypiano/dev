@@ -38,7 +38,7 @@ interface IBorrowerOperations {
         address _collateralTokenAddress
     ) external;
 
-    function openTrove(uint _maxFee, uint _LUSDAmount, address _upperHint, address _lowerHint) external payable;
+    function openTrove(uint _maxFee, uint _LUSDAmount, address _upperHint, address _lowerHint, uint _collateralAmount) external payable;
 
     function addColl(address _upperHint, address _lowerHint) external payable;
 
