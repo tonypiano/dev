@@ -57,7 +57,6 @@ contract('CollSurplusPool', async accounts => {
 
     await contracts.collateralToken.transfer(contracts.borrowerOperations.address, dec(5000, 'ether'));
 
-
     const price = toBN(dec(100, 18))
     await priceFeed.setPrice(price)
 

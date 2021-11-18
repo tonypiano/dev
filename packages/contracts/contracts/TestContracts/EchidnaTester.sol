@@ -78,7 +78,7 @@ contract EchidnaTester {
             address(lusdToken), address(0), address(collateralToken));
 
         activePool.setAddresses(address(borrowerOperations), 
-            address(troveManager), address(stabilityPool), address(defaultPool));
+            address(troveManager), address(stabilityPool), address(defaultPool), address(collateralToken));
 
         defaultPool.setAddresses(address(troveManager), address(activePool));
         

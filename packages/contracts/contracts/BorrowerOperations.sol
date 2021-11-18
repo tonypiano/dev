@@ -35,7 +35,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
 
     ILUSDToken public lusdToken;
 
-    IERC20 collateralToken;
+    IERC20 internal collateralToken;
 
     // A doubly linked list of Troves, sorted by their collateral ratios
     ISortedTroves public sortedTroves;

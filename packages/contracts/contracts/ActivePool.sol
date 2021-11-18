@@ -29,6 +29,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     uint256 internal Collateral;  // deposited Collateral tracker
     uint256 internal Debt;
 
+    IERC20 internal collateralToken;
+
     // --- Events ---
 
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
@@ -42,7 +44,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _stabilityPoolAddress,
-        address _defaultPoolAddress
+        address _defaultPoolAddress,
+        address _collateralTokenAddress
     )
         external
         onlyOwner
@@ -51,11 +54,13 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
+        checkContract(_collateralTokenAddress);
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
         stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
+        collateralToken = IERC20(_collateralTokenAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -72,7 +77,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     *
     */
     function getCollateral() external view override returns (uint) {
-        return Collateral;
+        return collateralToken.balanceOf(address(this));
     }
 
     function getDebt() external view override returns (uint) {
