@@ -31,6 +31,19 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_newCollateralTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "CollateralTokenAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "_newCommunityIssuanceAddress",
         "type": "address"
       }
@@ -614,11 +627,37 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "addCollateral",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "borrowerOperations",
     "outputs": [
       {
         "internalType": "contract IBorrowerOperations",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "collateralToken",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
         "name": "",
         "type": "address"
       }
@@ -1194,6 +1233,11 @@
         "internalType": "address",
         "name": "_communityIssuanceAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collateralTokenAddress",
+        "type": "address"
       }
     ],
     "name": "setAddresses",
@@ -1257,9 +1301,5 @@
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]

@@ -848,7 +848,8 @@ export class PopulatableEthersLiquity
       maxBorrowingRate.hex,
       borrowLUSD.hex,
       ...hints,
-      { value: depositCollateral.hex, ...overrides }
+      depositCollateral.hex,
+      { ...overrides }
     ];
 
     let gasHeadroom: number | undefined;
@@ -978,10 +979,11 @@ export class PopulatableEthersLiquity
     const txParams = (borrowLUSD?: Decimal): Parameters<typeof borrowerOperations.adjustTrove> => [
       maxBorrowingRate.hex,
       (withdrawCollateral ?? Decimal.ZERO).hex,
+      (depositCollateral ?? Decimal.ZERO).hex,
       (borrowLUSD ?? repayLUSD ?? Decimal.ZERO).hex,
       !!borrowLUSD,
       ...hints,
-      { value: depositCollateral?.hex, ...overrides }
+      {...overrides }
     ];
 
     let gasHeadroom: number | undefined;
