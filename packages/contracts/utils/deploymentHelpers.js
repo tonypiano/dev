@@ -400,6 +400,7 @@ class DeploymentHelper {
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
       contracts.activePool.address,
+      contracts.collateralToken.address
     )
 
     // set contracts in HintHelpers

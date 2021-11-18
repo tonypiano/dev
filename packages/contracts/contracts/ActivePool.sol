@@ -92,6 +92,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         // Collateral = Collateral.sub(_amount);
         // emit ActivePoolCollateralUpdated(Collateral); //TODO before was current value, now would be delta value
         emit CollateralSent(_account, _amount);
+        console.log("Sending collateral to account:", _account, _amount);
         collateralToken.safeTransfer(_account, _amount);
        
        // require(success, "ActivePool: sending Collateral failed");

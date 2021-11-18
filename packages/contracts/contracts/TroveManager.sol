@@ -946,14 +946,11 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
             gasPoolAddress
         );
         RedemptionTotals memory totals;
-// console.log("1");
+
         _requireValidMaxFeePercentage(_maxFeePercentage);
         _requireAfterBootstrapPeriod();
         totals.price = priceFeed.fetchPrice();
-        console.log("totals.price: ", totals.price);
-        console.log("TCR: ", _getTCR(totals.price));
-        console.log("MCR: ", MCR);
-    
+        
         _requireTCRoverMCR(totals.price);
         _requireAmountGreaterThanZero(_LUSDamount);
         _requireLUSDBalanceCoversRedemption(contractsCache.lusdToken, msg.sender, _LUSDamount);

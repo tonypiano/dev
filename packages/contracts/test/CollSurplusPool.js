@@ -48,7 +48,7 @@ contract('CollSurplusPool', async accounts => {
   })
 
   it("CollSurplusPool::getETH(): Returns the ETH balance of the CollSurplusPool after redemption", async () => {
-    const ETH_1 = await collSurplusPool.getETH()
+    const ETH_1 = await collSurplusPool.getCollateralBalance()
     assert.equal(ETH_1, '0')
 
     await contracts.collateralToken.deposit({ value: dec(10000, 'ether') });
@@ -65,11 +65,14 @@ contract('CollSurplusPool', async accounts => {
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
-
+    console.log("--- A: ", A);
+    console.log("--- collSurplusPool: ", collSurplusPool.address);
+    console.log("Expected: ", B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)).toString());
     // At ETH:USD = 100, this redemption should leave 1 ether of coll surplus
     await th.redeemCollateralAndGetTxObject(A, contracts, B_netDebt)
 
-    const ETH_2 = await collSurplusPool.getETH()
+    const ETH_2 = await collSurplusPool.getCollateralBalance()
+    console.log("ETH_2: ", ETH_2.toString());
     th.assertIsApproximatelyEqual(ETH_2, B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)))
   })
 
@@ -101,7 +104,7 @@ contract('CollSurplusPool', async accounts => {
     // At ETH:USD = 100, this redemption should leave 1 ether of coll surplus for B
     await th.redeemCollateralAndGetTxObject(A, contracts, B_netDebt)
 
-    const ETH_2 = await collSurplusPool.getETH()
+    const ETH_2 = await collSurplusPool.getCollateralBalance()
     th.assertIsApproximatelyEqual(ETH_2, B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)))
 
     const claimCollateralData = th.getTransactionData('claimCollateral()', [])

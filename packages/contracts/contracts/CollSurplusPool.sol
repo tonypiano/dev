@@ -7,6 +7,7 @@ import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+import "./Dependencies/IERC20.sol";
 
 
 contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
@@ -19,7 +20,9 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     address public activePoolAddress;
 
     // deposited ether tracker
-    uint256 internal Collateral;
+    // uint256 internal Collateral;
+    IERC20 internal collateralToken;
+
     // Collateral surplus claimable by trove owners
     mapping (address => uint) internal balances;
 
@@ -37,7 +40,8 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _activePoolAddress
+        address _activePoolAddress,
+        address _collateralTokenAddress
     )
         external
         override
@@ -46,10 +50,12 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
+        checkContract(_collateralTokenAddress);
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
         activePoolAddress = _activePoolAddress;
+        collateralToken = IERC20(_collateralTokenAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -58,10 +64,8 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         _renounceOwnership();
     }
 
-    /* Returns the ETH state variable at ActivePool address.
-       Not necessarily equal to the raw ether balance - ether can be forcibly sent to contracts. */
-    function getETH() external view override returns (uint) {
-        return Collateral;
+    function getCollateralBalance() external view override returns (uint) {
+        return collateralToken.balanceOf(address(this));
     }
 
     function getCollateral(address _account) external view override returns (uint) {
@@ -87,7 +91,7 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         balances[_account] = 0;
         emit CollBalanceUpdated(_account, 0);
 
-        Collateral = Collateral.sub(claimableColl);
+        // Collateral = Collateral.sub(claimableColl);
         emit CollateralSent(_account, claimableColl);
 
 require(1 < 0, "claimColl");
@@ -120,6 +124,6 @@ require(1 < 0, "claimColl");
     receive() external payable {
         _requireCallerIsActivePool();
         require(0<1, "CollSurplusPool: Fallback function called");
-        Collateral = Collateral.add(msg.value);
+        // Collateral = Collateral.add(msg.value);
     }
 }

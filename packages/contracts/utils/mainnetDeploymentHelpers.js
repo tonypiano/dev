@@ -303,6 +303,7 @@ class MainnetDeploymentHelper {
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
         contracts.activePool.address,
+        contracts.collateralToken.address,
 	{gasPrice}
       ))
 

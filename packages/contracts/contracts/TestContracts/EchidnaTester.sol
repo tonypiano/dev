@@ -87,7 +87,7 @@ contract EchidnaTester {
             address(sortedTroves), address(priceFeedTestnet), address(0));
 
         collSurplusPool.setAddresses(address(borrowerOperations), 
-             address(troveManager), address(activePool));
+             address(troveManager), address(activePool), address(collateralToken));
     
         sortedTroves.setParams(1e18, address(troveManager), address(borrowerOperations));
 
