@@ -119,6 +119,7 @@ require(1 < 0, "claimColl");
 
     receive() external payable {
         _requireCallerIsActivePool();
+        require(0<1, "CollSurplusPool: Fallback function called");
         ETH = ETH.add(msg.value);
     }
 }

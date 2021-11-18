@@ -26,7 +26,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
-    uint256 internal Collateral;  // deposited Collateral tracker
+    // uint256 internal Collateral;  // deposited Collateral tracker
     uint256 internal Debt;
 
     IERC20 internal collateralToken;
@@ -87,17 +87,14 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     // --- Pool functionality ---
     function sendCollateral(address _account, uint _amount) external override {
         _requireCallerIsBOorTroveMorSP();
-        require(_account != address(0), "Account cannot be zero address");  //TODO checkContract?  Are we 100% sure this is a contract?
-  require(1 < 0, "asdf sendCollateral");
-        Collateral = Collateral.sub(_amount);
-        emit ActivePoolCollateralUpdated(Collateral);
-        emit CollateralSent(_account, _amount);
-        
-        IERC20(_account).safeTransferFrom(address(this), _account, _amount);
-  
+        require(_account != address(0), "Account cannot be zero address");
 
-        // (bool success, ) = _account.call{ value: _amount }(""); //TODO this is an ERC20 transfer, not a call
-        // require(success, "ActivePool: sending Collateral failed");
+        // Collateral = Collateral.sub(_amount);
+        // emit ActivePoolCollateralUpdated(Collateral); //TODO before was current value, now would be delta value
+        emit CollateralSent(_account, _amount);
+        collateralToken.safeTransfer(_account, _amount);
+       
+       // require(success, "ActivePool: sending Collateral failed");
     }
 
     function increaseDebt(uint _amount) external override {
@@ -143,7 +140,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     receive() external payable {
         _requireCallerIsBorrowerOperationsOrDefaultPool();
         require(1<0, "oh no in payable!");
-        Collateral = Collateral.add(msg.value);
-        emit ActivePoolCollateralUpdated(Collateral);
+        // Collateral = Collateral.add(msg.value);
+        // emit ActivePoolCollateralUpdated(Collateral);
     }
 }
