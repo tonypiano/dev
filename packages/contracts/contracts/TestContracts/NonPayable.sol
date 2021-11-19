@@ -2,7 +2,7 @@
 
 pragma solidity 0.6.11;
 
-//import "../Dependencies/console.sol";
+import "../Dependencies/console.sol";
 
 
 contract NonPayable {
@@ -14,11 +14,14 @@ contract NonPayable {
 
     function forward(address _dest, bytes calldata _data) external payable {
         (bool success, bytes memory returnData) = _dest.call{ value: msg.value }(_data);
-        //console.logBytes(returnData);
+        console.log("to address", _dest);        
+        console.logBytes(_data);
+        console.logBytes(returnData);
         require(success, string(returnData));
+        // require(success, "zzzz");
     }
 
     receive() external payable {
-        require(isPayable);
+        require(isPayable, "asdlkfasdjkf");
     }
 }

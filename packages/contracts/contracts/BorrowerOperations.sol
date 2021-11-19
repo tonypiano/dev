@@ -165,7 +165,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
     // --- Borrower Trove Operations ---
 
     function openTrove(uint _maxFeePercentage, uint _LUSDAmount, address _upperHint, address _lowerHint, uint _collateralAmount) external payable override {
-
+console.log("openTrove");
         ContractsCache memory contractsCache = ContractsCache(troveManager, activePool, lusdToken);
         LocalVariables_openTrove memory vars;
 
