@@ -45,16 +45,17 @@ contract('CollSurplusPool', async accounts => {
     await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
     await deploymentHelper.connectLQTYContracts(LQTYContracts)
     await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await th.depositCollateral(contracts)
   })
 
   it("CollSurplusPool::getETH(): Returns the ETH balance of the CollSurplusPool after redemption", async () => {
     const ETH_1 = await collSurplusPool.getCollateralBalance()
     assert.equal(ETH_1, '0')
 
-    await contracts.collateralToken.deposit({ value: dec(10000, 'ether') });
-    const totalSupply = await contracts.collateralToken.totalSupply();
+    // await contracts.collateralToken.deposit({ value: dec(10000, 'ether') });
+    // const totalSupply = await contracts.collateralToken.totalSupply();
 
-    await contracts.collateralToken.transfer(contracts.borrowerOperations.address, dec(5000, 'ether'));
+    // await contracts.collateralToken.transfer(contracts.borrowerOperations.address, dec(5000, 'ether'));
 
     const price = toBN(dec(100, 18))
     await priceFeed.setPrice(price)
@@ -90,8 +91,9 @@ contract('CollSurplusPool', async accounts => {
     const B_lusdAmount = toBN(dec(3000, 18))
     const B_netDebt = await th.getAmountWithBorrowingFee(contracts, B_lusdAmount)
     const openTroveData = th.getTransactionData('openTrove(uint256,uint256,address,address,uint256)', ['0xde0b6b3a7640000', web3.utils.toHex(B_lusdAmount), B, B, web3.utils.toHex(B_coll)])
-    console.log("borrowerOperations: ", borrowerOperations.address)
+    console.log("1..  borrowerOperations: ", borrowerOperations.address)
     await nonPayable.forward(borrowerOperations.address, openTroveData, { value: B_coll })
+    console.log("2..  borrowerOperations: ", borrowerOperations.address)
     await openTrove({ extraLUSDAmount: B_netDebt, extraParams: { from: A, value: dec(3000, 'ether') } })
 
     // skip bootstrapping phase
@@ -104,6 +106,7 @@ contract('CollSurplusPool', async accounts => {
     th.assertIsApproximatelyEqual(ETH_2, B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)))
 
     const claimCollateralData = th.getTransactionData('claimCollateral()', [])
+    console.log("2..  borrowerOperations: ", borrowerOperations.address)
     await th.assertRevert(nonPayable.forward(borrowerOperations.address, claimCollateralData), 'CollSurplusPool: sending ETH failed')
   })
 

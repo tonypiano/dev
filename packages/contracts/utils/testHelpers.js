@@ -692,13 +692,13 @@ class TestHelper {
     if (ICR) {
       const price = await contracts.priceFeedTestnet.getPrice()
       extraParams.value = ICR.mul(totalDebt).div(price)
-      console.log("---ICR", ICR.toString());
-      console.log("---totalDebt", totalDebt.toString());
-      console.log("---price", price.toString());
+      // console.log("---ICR", ICR.toString());
+      // console.log("---totalDebt", totalDebt.toString());
+      // console.log("---price", price.toString());
     }
-    console.log("---total debt:", totalDebt.toString());
+    // console.log("---total debt:", totalDebt.toString());
     // console.log("---extraParams:", extraParams);
-    console.log("---end extraParams.value:", extraParams.value.toString());  
+    // console.log("---end extraParams.value:", extraParams.value.toString());  
 
     // await WETH.transfer(contracts.borrowerOperations.address, totalDebt);
     const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, lusdAmount, upperHint, lowerHint, extraParams.value, extraParams)
@@ -1212,6 +1212,11 @@ class TestHelper {
      */
     return web3.utils.sha3(signatureString).slice(0,10) +
       params.reduce((acc, p) => acc + this.formatParam(p), '')
+  }
+
+  static async depositCollateral(coreContracts) {
+    await coreContracts.collateralToken.deposit({ value: this.dec(10000, 'ether') });
+    await coreContracts.collateralToken.transfer(coreContracts.borrowerOperations.address, this.dec(5000, 'ether'));
   }
 }
 

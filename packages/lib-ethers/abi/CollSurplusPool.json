@@ -186,7 +186,7 @@
   },
   {
     "inputs": [],
-    "name": "getETH",
+    "name": "getCollateralBalance",
     "outputs": [
       {
         "internalType": "uint256",
@@ -238,6 +238,11 @@
       {
         "internalType": "address",
         "name": "_activePoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collateralTokenAddress",
         "type": "address"
       }
     ],

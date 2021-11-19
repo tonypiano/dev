@@ -76,6 +76,7 @@ contract('SortedTroves', async accounts => {
       await deploymentHelper.connectLQTYContracts(LQTYContracts)
       await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
       await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+      await th.depositCollateral(contracts)
     })
 
     it('contains(): returns true for addresses that have opened troves', async () => {

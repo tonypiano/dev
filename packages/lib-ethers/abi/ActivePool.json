@@ -310,6 +310,11 @@
         "internalType": "address",
         "name": "_defaultPoolAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collateralTokenAddress",
+        "type": "address"
       }
     ],
     "name": "setAddresses",

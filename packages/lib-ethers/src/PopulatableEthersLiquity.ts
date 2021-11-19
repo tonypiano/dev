@@ -848,6 +848,7 @@ export class PopulatableEthersLiquity
       maxBorrowingRate.hex,
       borrowLUSD.hex,
       ...hints,
+      depositCollateral.hex,
       { value: depositCollateral.hex, ...overrides }
     ];
 

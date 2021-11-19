@@ -175,10 +175,8 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
     function increaseF_LUSD(uint _LUSDFee) external override {
         _requireCallerIsBorrowerOperations();
-        uint LUSDFeePerLQTYStaked;
-        
+        uint LUSDFeePerLQTYStaked;    
         if (totalLQTYStaked > 0) {LUSDFeePerLQTYStaked = _LUSDFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}
-        
         F_LUSD = F_LUSD.add(LUSDFeePerLQTYStaked);
         emit F_LUSDUpdated(F_LUSD);
     }

@@ -1438,26 +1438,22 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     // Updates the baseRate state variable based on time elapsed since the last redemption or LUSD borrowing operation.
     function decayBaseRateFromBorrowing() external override {
         _requireCallerIsBorrowerOperations();
-
-        uint decayedBaseRate = _calcDecayedBaseRate();
+        uint decayedBaseRate = _calcDecayedBaseRate();        
         assert(decayedBaseRate <= DECIMAL_PRECISION);  // The baseRate can decay to 0
-
         baseRate = decayedBaseRate;
         emit BaseRateUpdated(decayedBaseRate);
-
-        _updateLastFeeOpTime();
+        _updateLastFeeOpTime();    
     }
 
     // --- Internal fee functions ---
 
     // Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
-    function _updateLastFeeOpTime() internal {
-        uint timePassed = block.timestamp.sub(lastFeeOperationTime);
-
-        if (timePassed >= SECONDS_IN_ONE_MINUTE) {
-            lastFeeOperationTime = block.timestamp;
-            emit LastFeeOpTimeUpdated(block.timestamp);
-        }
+    function _updateLastFeeOpTime() internal {        
+        uint timePassed = block.timestamp.sub(lastFeeOperationTime);        
+        if (timePassed >= SECONDS_IN_ONE_MINUTE) {                  
+            lastFeeOperationTime = block.timestamp;                                  
+            emit LastFeeOpTimeUpdated(block.timestamp);            
+        }                
     }
 
     function _calcDecayedBaseRate() internal view returns (uint) {

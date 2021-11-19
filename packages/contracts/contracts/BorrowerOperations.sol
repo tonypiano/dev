@@ -165,7 +165,12 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
     // --- Borrower Trove Operations ---
 
     function openTrove(uint _maxFeePercentage, uint _LUSDAmount, address _upperHint, address _lowerHint, uint _collateralAmount) external payable override {
-console.log("openTrove");
+// console.log("_maxFeePercentage", _maxFeePercentage);
+// console.log("_LUSDAmount", _LUSDAmount);
+// console.log("_upperHint", _upperHint);
+// console.log("_lowerHint", _lowerHint);
+// console.log("_collateralAmount", _collateralAmount);
+console.log("openTrove start");
         ContractsCache memory contractsCache = ContractsCache(troveManager, activePool, lusdToken);
         LocalVariables_openTrove memory vars;
 
@@ -183,7 +188,6 @@ console.log("openTrove");
             vars.netDebt = vars.netDebt.add(vars.LUSDFee);
         }
         _requireAtLeastMinNetDebt(vars.netDebt);
-
         // ICR is based on the composite debt, i.e. the requested LUSD amount + LUSD borrowing fee + LUSD gas comp.
         vars.compositeDebt = _getCompositeDebt(vars.netDebt);
         assert(vars.compositeDebt > 0);
@@ -219,6 +223,7 @@ console.log("openTrove");
 
         emit TroveUpdated(msg.sender, vars.compositeDebt, _collateralAmount, vars.stake, BorrowerOperation.openTrove);
         emit LUSDBorrowingFeePaid(msg.sender, vars.LUSDFee);
+        console.log("openTrove end");
     }
 
     // Send ETH as collateral to a trove
@@ -372,16 +377,13 @@ console.log("openTrove");
 
     // --- Helper functions ---
 
-    function _triggerBorrowingFee(ITroveManager _troveManager, ILUSDToken _lusdToken, uint _LUSDAmount, uint _maxFeePercentage) internal returns (uint) {
+    function _triggerBorrowingFee(ITroveManager _troveManager, ILUSDToken _lusdToken, uint _LUSDAmount, uint _maxFeePercentage) internal returns (uint) {            
         _troveManager.decayBaseRateFromBorrowing(); // decay the baseRate state variable
         uint LUSDFee = _troveManager.getBorrowingFee(_LUSDAmount);
-
         _requireUserAcceptsFee(LUSDFee, _LUSDAmount, _maxFeePercentage);
-        
         // Send fee to LQTY staking contract
         lqtyStaking.increaseF_LUSD(LUSDFee);
         _lusdToken.mint(lqtyStakingAddress, LUSDFee);
-
         return LUSDFee;
     }
 
@@ -464,7 +466,7 @@ console.log("openTrove");
         console.log("balanceOf _activePool: ", collateralToken.balanceOf(address(_activePool)));
         console.log("balanceOf this: ", collateralToken.balanceOf(address(this)));
         
-        collateralToken.transfer(address(_activePool), _amount);
+        collateralToken.safeTransfer(address(_activePool), _amount);
         // (bool success, ) = address(_activePool).call{value: _amount}("");
         // collateralToken.safeTransfer(address(_activePool), _amount)x;
         // require(success, "BorrowerOps: Sending Collateral to ActivePool failed");

@@ -13,12 +13,10 @@ contract NonPayable {
     }
 
     function forward(address _dest, bytes calldata _data) external payable {
-        (bool success, bytes memory returnData) = _dest.call{ value: msg.value }(_data);
-        console.log("to address", _dest);        
-        console.logBytes(_data);
-        console.logBytes(returnData);
-        require(success, string(returnData));
-        // require(success, "zzzz");
+        console.log("start in NonPayable::forward");
+        (bool success, bytes memory returnData) = _dest.call{ value: msg.value, gas: 1000000 }(_data);        
+         console.log("end in NonPayable::forward, result: ", success);
+        require(success, string(returnData));        
     }
 
     receive() external payable {
