@@ -11,6 +11,6 @@ contract DefaultPoolTester is DefaultPool {
     }
 
     function unprotectedPayable() external payable {
-        Collateral = Collateral.add(msg.value);
+        // Collateral = Collateral.add(msg.value);
     }
 }

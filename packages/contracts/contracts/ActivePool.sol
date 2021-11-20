@@ -7,7 +7,8 @@ import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
-import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+// import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "./LPRewards/Dependencies/SafeERC20.sol";
 
 /*
  * The Active Pool holds the Collateral token and debt amount (but not debt tokens) for all active troves.
@@ -26,11 +27,11 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
-    // uint256 internal Collateral;  // deposited Collateral tracker
+    
+    IERC20 internal collateralToken;
     uint256 internal Debt;
 
-    IERC20 internal collateralToken;
-
+    
     // --- Events ---
 
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
@@ -92,7 +93,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         // Collateral = Collateral.sub(_amount);
         // emit ActivePoolCollateralUpdated(Collateral); //TODO before was current value, now would be delta value
         emit CollateralSent(_account, _amount);
-        console.log("Sending collateral to account:", _account, _amount);
+        // console.log("Sending collateral to account:", _account, _amount);
         collateralToken.safeTransfer(_account, _amount);
        
        // require(success, "ActivePool: sending Collateral failed");

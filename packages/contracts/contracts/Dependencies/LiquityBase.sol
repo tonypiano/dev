@@ -75,8 +75,6 @@ contract LiquityBase is BaseMath, ILiquityBase {
     function _getTCR(uint _price) internal view returns (uint TCR) {
         uint entireSystemColl = getEntireSystemColl();
         uint entireSystemDebt = getEntireSystemDebt();
-        console.log("entireSystemColl: ", entireSystemColl);
-        console.log("entireSystemDebt: ", entireSystemDebt);
         TCR = LiquityMath._computeCR(entireSystemColl, entireSystemDebt, _price);
 
         return TCR;

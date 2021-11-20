@@ -12,8 +12,9 @@ import "./Dependencies/LiquityBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+// import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./LPRewards/Dependencies/SafeERC20.sol";
-import "./Dependencies/console.sol";
+
 
 contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOperations {
     using SafeERC20 for IERC20;
@@ -170,7 +171,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
 // console.log("_upperHint", _upperHint);
 // console.log("_lowerHint", _lowerHint);
 // console.log("_collateralAmount", _collateralAmount);
-console.log("openTrove start");
+
         ContractsCache memory contractsCache = ContractsCache(troveManager, activePool, lusdToken);
         LocalVariables_openTrove memory vars;
 
@@ -222,8 +223,7 @@ console.log("openTrove start");
         _withdrawDebt(contractsCache.activePool, contractsCache.lusdToken, gasPoolAddress, LUSD_GAS_COMPENSATION, LUSD_GAS_COMPENSATION);
 
         emit TroveUpdated(msg.sender, vars.compositeDebt, _collateralAmount, vars.stake, BorrowerOperation.openTrove);
-        emit LUSDBorrowingFeePaid(msg.sender, vars.LUSDFee);
-        console.log("openTrove end");
+        emit LUSDBorrowingFeePaid(msg.sender, vars.LUSDFee);        
     }
 
     // Send ETH as collateral to a trove
@@ -473,7 +473,7 @@ console.log("openTrove start");
     }
 
     // Issue the specified amount of LUSD to _account and increases the total active debt (_netDebtIncrease potentially includes a LUSDFee)
-    function _withdrawDebt(IActivePool _activePool, ILUSDToken _lusdToken, address _account, uint _LUSDAmount, uint _netDebtIncrease) internal {
+    function _withdrawDebt(IActivePool _activePool, ILUSDToken _lusdToken, address _account, uint _LUSDAmount, uint _netDebtIncrease) internal {    
         _activePool.increaseDebt(_netDebtIncrease);
         _lusdToken.mint(_account, _LUSDAmount);
     }

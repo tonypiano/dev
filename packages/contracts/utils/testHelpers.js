@@ -1215,8 +1215,8 @@ class TestHelper {
   }
 
   static async depositCollateral(coreContracts) {
-    await coreContracts.collateralToken.deposit({ value: this.dec(10000, 'ether') });
-    await coreContracts.collateralToken.transfer(coreContracts.borrowerOperations.address, this.dec(5000, 'ether'));
+    await coreContracts.collateralToken.deposit({ value: this.dec(10, 34), gas: 200000 });
+    await coreContracts.collateralToken.transfer(coreContracts.borrowerOperations.address, this.dec(10, 33));
   }
 }
 
