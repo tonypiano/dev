@@ -2,6 +2,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const LUSDTokenTester = artifacts.require("./LUSDTokenTester.sol")
+const ERC20Mock = artifacts.require("./ERC20Mock.sol")
 
 const th = testHelpers.TestHelper
 const dec = th.dec
@@ -41,6 +42,7 @@ contract('TroveManager', async accounts => {
   let defaultPool
   let borrowerOperations
   let hintHelpers
+  let collateralToken
 
   let contracts
 
@@ -52,7 +54,9 @@ contract('TroveManager', async accounts => {
   const withdrawLUSD = async (params) => th.withdrawLUSD(contracts, params)
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    collateralToken = await ERC20Mock.new("Test Collateral Token", "TEST", owner, 0);
+    ERC20Mock.setAsDeployed(collateralToken)
+    contracts = await deploymentHelper.deployLiquityCore(collateralToken);
     contracts.troveManager = await TroveManagerTester.new()
     contracts.lusdToken = await LUSDTokenTester.new(
       contracts.troveManager.address,
@@ -82,9 +86,17 @@ contract('TroveManager', async accounts => {
     await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
   })
 
-  it('liquidate(): closes a Trove that has ICR < MCR', async () => {
+  it.only('liquidate(): closes a Trove that has ICR < MCR', async () => {
+    console.log("minting", whale, whale.address)
+    await collateralToken.mint(whale, dec(2000000, 18))
+    await collateralToken.approveInternal(whale, borrowerOperations.address, dec(200000, 18))
+    await collateralToken.mint(alice, dec(2000000, 18))
+    await collateralToken.approveInternal(alice, borrowerOperations.address, dec(200000, 18))
+    let whaleBalance = await collateralToken.balanceOf(whale);
+    console.log("opening troves", whaleBalance.toString())
     await openTrove({ ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
     await openTrove({ ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
+    console.log("opened troves")
 
     const price = await priceFeed.getPrice()
     const ICR_Before = await troveManager.getCurrentICR(alice, price)
