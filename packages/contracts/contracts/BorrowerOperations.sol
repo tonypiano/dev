@@ -216,6 +216,8 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         vars.arrayIndex = contractsCache.troveManager.addTroveOwnerToArray(msg.sender);
         emit TroveCreated(msg.sender, vars.arrayIndex);
 
+        collateralToken.safeTransferFrom(msg.sender, address(this), _collateralAmount);
+
         // Move the ether to the Active Pool, and mint the LUSDAmount to the borrower
         _activePoolAddColl(contractsCache.activePool, _collateralAmount);
         _withdrawDebt(contractsCache.activePool, contractsCache.lusdToken, msg.sender, _LUSDAmount, vars.netDebt);

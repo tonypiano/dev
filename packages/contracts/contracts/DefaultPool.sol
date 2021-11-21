@@ -8,7 +8,7 @@ import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./LPRewards/Dependencies/SafeERC20.sol";
-// import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "./Dependencies/IERC20.sol";
 
 /*
  * The Default Pool holds the ETH and LUSD debt (but not LUSD tokens) from liquidations that have been redistributed
@@ -26,9 +26,11 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     address public troveManagerAddress;
     address public activePoolAddress;
     IERC20 internal collateralToken;
+    uint256 internal Collateral;  // deposited ETH tracker
     uint256 internal Debt;  // debt
 
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
+    event CollateralTokenAddressChanged(address _newCollateralTokenAddress);
     event DefaultPoolDebtUpdated(uint _Debt);
     event DefaultPoolCollateralUpdated(uint _ETH);
 
@@ -52,6 +54,7 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
+        emit CollateralTokenAddressChanged(_collateralTokenAddress);
 
         _renounceOwnership();
     }
@@ -76,11 +79,16 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     function sendCollateralToActivePool(uint _amount) external override {
         _requireCallerIsTroveManager();
         address activePool = activePoolAddress; // cache to save an SLOAD
+//        require(1 < 0, "oh no in sendCollateralToActivePool!");
+        Collateral = Collateral.sub(_amount);
+        emit DefaultPoolCollateralUpdated(Collateral);
+        emit CollateralSent(activePool, _amount);
+
+        collateralToken.safeTransfer(activePool, _amount);
         
         // emit DefaultPoolCollateralUpdated(Collateral);
         emit CollateralSent(activePool, _amount);
 
-    collateralToken.safeTransfer(address(activePool), _amount);    
         // (bool success, ) = activePool.call{ value: _amount }("");
         // require(success, "DefaultPool: sending ETH failed");
     }

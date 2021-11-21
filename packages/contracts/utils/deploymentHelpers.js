@@ -62,13 +62,13 @@ const maxBytes32 = '0x' + 'f'.repeat(64)
 
 class DeploymentHelper {
 
-  static async deployLiquityCore() {
+  static async deployLiquityCore(collateralTokenAddress) {
     const cmdLineArgs = process.argv
     const frameworkPath = cmdLineArgs[1]
     // console.log(`Framework used:  ${frameworkPath}`)
 
     if (frameworkPath.includes("hardhat")) {
-      return this.deployLiquityCoreHardhat()
+      return this.deployLiquityCoreHardhat(collateralTokenAddress)
     } else if (frameworkPath.includes("truffle")) {
       return this.deployLiquityCoreTruffle()
     }
@@ -86,7 +86,7 @@ class DeploymentHelper {
     }
   }
 
-  static async deployLiquityCoreHardhat() {
+  static async deployLiquityCoreHardhat(collateralToken) {
     const priceFeedTestnet = await PriceFeedTestnet.new()
     const sortedTroves = await SortedTroves.new()
     const troveManager = await TroveManager.new()
@@ -103,9 +103,11 @@ class DeploymentHelper {
       stabilityPool.address,
       borrowerOperations.address
     )
-    const collateralToken = await WETHToken.new()
+    if (!collateralToken) {
+      collateralToken = await WETHToken.new()
+      WETHToken.setAsDeployed(collateralToken)
+    }
     LUSDToken.setAsDeployed(lusdToken)
-    WETHToken.setAsDeployed(collateralToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
     SortedTroves.setAsDeployed(sortedTroves)
