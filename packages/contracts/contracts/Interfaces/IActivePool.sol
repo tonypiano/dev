@@ -14,4 +14,5 @@ interface IActivePool is IPool {
 
     // --- Functions ---
     function sendETH(address _account, uint _amount) external;
+    function addCollateral(uint _amount) external;
 }

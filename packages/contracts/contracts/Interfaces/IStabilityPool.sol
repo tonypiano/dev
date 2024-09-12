@@ -48,6 +48,7 @@ interface IStabilityPool {
     event SortedTrovesAddressChanged(address _newSortedTrovesAddress);
     event PriceFeedAddressChanged(address _newPriceFeedAddress);
     event CommunityIssuanceAddressChanged(address _newCommunityIssuanceAddress);
+    event CollateralTokenAddressChanged(address _newCollateralTokenAddress);
 
     event P_Updated(uint _P);
     event S_Updated(uint _S, uint128 _epoch, uint128 _scale);
@@ -81,7 +82,8 @@ interface IStabilityPool {
         address _lusdTokenAddress,
         address _sortedTrovesAddress,
         address _priceFeedAddress,
-        address _communityIssuanceAddress
+        address _communityIssuanceAddress,
+        address _collateralTokenAddress
     ) external;
 
     /*
@@ -190,8 +192,7 @@ interface IStabilityPool {
     function getCompoundedFrontEndStake(address _frontEnd) external view returns (uint);
 
     /*
-     * Fallback function
-     * Only callable by Active Pool, it just accounts for ETH received
-     * receive() external payable;
+     * Only callable by Active Pool, it just accounts for Collateral received
      */
+    function addCollateral(uint _amount) external;
 }

@@ -3,17 +3,17 @@
 pragma solidity 0.6.11;
 
 import "../Dependencies/CheckContract.sol";
-import "../Dependencies/IERC20.sol";
+import "../Interfaces/IERC20Ext.sol";
 
 
 contract TokenScript is CheckContract {
     string constant public NAME = "TokenScript";
 
-    IERC20 immutable token;
+    IERC20Ext immutable token;
 
     constructor(address _tokenAddress) public {
         checkContract(_tokenAddress);
-        token = IERC20(_tokenAddress);
+        token = IERC20Ext(_tokenAddress);
     }
 
     function transfer(address recipient, uint256 amount) external returns (bool) {

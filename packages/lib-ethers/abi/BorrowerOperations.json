@@ -31,6 +31,19 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_collateralTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "CollateralTokenAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "_defaultPoolAddress",
         "type": "address"
       }
@@ -356,6 +369,11 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_collDeposit",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
         "name": "_upperHint",
         "type": "address"
@@ -368,7 +386,7 @@
     ],
     "name": "addColl",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -381,6 +399,11 @@
       {
         "internalType": "uint256",
         "name": "_collWithdrawal",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_collDeposit",
         "type": "uint256"
       },
       {
@@ -406,7 +429,7 @@
     ],
     "name": "adjustTrove",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -541,6 +564,11 @@
         "type": "address"
       },
       {
+        "internalType": "uint256",
+        "name": "_collDeposit",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
         "name": "_upperHint",
         "type": "address"
@@ -553,7 +581,7 @@
     ],
     "name": "moveETHGainToTrove",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -577,11 +605,16 @@
         "internalType": "address",
         "name": "_lowerHint",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_collateralAmount",
+        "type": "uint256"
       }
     ],
     "name": "openTrove",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -683,6 +716,11 @@
       {
         "internalType": "address",
         "name": "_lqtyStakingAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collateralTokenAddress",
         "type": "address"
       }
     ],
